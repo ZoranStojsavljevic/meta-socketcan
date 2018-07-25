@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425
 PR = "r0"
 
 ## DEPENDS = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"
-## RDEPENDS_${PN} = "???"
+RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 SRCREV = "e3ac7393b566345d057c2d17a4d328007caaacac"
 
