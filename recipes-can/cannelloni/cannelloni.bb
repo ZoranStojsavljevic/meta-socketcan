@@ -10,7 +10,7 @@ RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 SRCREV = "e3ac7393b566345d057c2d17a4d328007caaacac"
 
-SRC_URI = "git://github.com/mguentner/cannelloni"
+SRC_URI = "git://github.com/mguentner/cannelloni.git;protocol=http"
 
 S = "${WORKDIR}/git"
 
