@@ -1,5 +1,5 @@
 SUMMARY = "SocketCAN over Ethernet tunnel using UDP to transfer CAN frames between two machines"
-SECTION = "canapp"
+SECTION = "socketcan"
 LICENSE = "CLOSED"
 ## LIC_FILES_CHKSUM = "file://gpl-2.0.txt;md5=B234EE4D69F5FCE4486A80FDAF4A4263"
 
