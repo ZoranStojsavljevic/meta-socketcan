@@ -1,2 +1,2 @@
-# meta-socketCAN
-Attempt to unify socketCAN repositories into one layer
+# meta-socketcan
+Attempt to unify socketcan repositories into one layer
