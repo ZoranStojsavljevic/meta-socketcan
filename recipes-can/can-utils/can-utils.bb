@@ -10,7 +10,7 @@ RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 SRCREV = "47f2e7a180e50ee998f2e6aea45884f84042c4fa"
 
-SRC_URI = "git://github.com/linux-can/can-utils"
+SRC_URI = "git://github.com/linux-can/can-utils.git;protocol=http"
 
 SRC_URI[md5sum] = "f8500620c1fe8fd3ce01a5bfd6a03adb"
 SRC_URI[sha256sum] = "ed03395b3d69eccb1c59e68414874485ce43c0da76d9f3e0ce2fd1d1f06f736c"
