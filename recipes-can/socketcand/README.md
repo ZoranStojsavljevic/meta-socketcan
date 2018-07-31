@@ -1,5 +1,6 @@
 ### short socketcand user manual: How to activate socketcand on Beaglebone Black?
-'''
+
+```
 root@beaglebone:~# modprobe can
 [  481.509387] can: controller area network core (rev 20170425 abi 9)
 [  481.516123] NET: Registered protocol family 29
@@ -115,5 +116,6 @@ root@beaglebone:~# nc 127.0.0.1 28601
 < hi >< open vcan0 >
 < ok >< rawmode >
 < ok >
-root@beaglebone:~# 
-'''
+root@beaglebone:~#
+```
+
