@@ -1,4 +1,4 @@
-### short socketcand user manual: How to activate socketcand on Beaglebone Black?
+### Short socketcand user manual: How to activate socketcand on Beaglebone Black?
 
 ```
 root@beaglebone:~# modprobe can
