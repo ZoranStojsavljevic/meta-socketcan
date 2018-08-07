@@ -1,120 +1,86 @@
-## socketCAN-Fd framework setup
+## can-utils package
 
-Here summarized what I, after some lengthily investigation, found using
-Beaglebone Black and Vbox Virtual machine, which passes through host
-(my host is pass-through VT-d capable).
+#### candump -help
+```
+Usage: candump [options] <CAN interface>+
+  (use CTRL-C to terminate candump)
 
-VBox VM and BBB HW are connected via private IP network, NOT
-influencing host PC at all.
+Options: -t <type>   (timestamp: (a)bsolute/(d)elta/(z)ero/(A)bsolute w date)
+         -H          (read hardware timestamps instead of system timestamps)
+         -c          (increment color mode level)
+         -i          (binary output - may exceed 80 chars/line)
+         -a          (enable additional ASCII output)
+         -S          (swap byte order in printed CAN data[] - marked with '`' )
+         -s <level>  (silent mode - 0: off (default) 1: animation 2: silent)
+         -b <can>    (bridge mode - send received frames to <can>)
+         -B <can>    (bridge mode - like '-b' with disabled loopback)
+         -u <usecs>  (delay bridge forwarding by <usecs> microseconds)
+         -l          (log CAN-frames into file. Sets '-s 2' by default)
+         -L          (use log file format on stdout)
+         -n <count>  (terminate after receiption of <count> CAN frames)
+         -r <size>   (set socket receive buffer to <size>)
+         -D          (Don't exit if a "detected" can device goes down.
+         -d          (monitor dropped CAN frames)
+         -e          (dump CAN error frames in human-readable format)
+         -x          (print extra message infos, rx/tx brs esi)
+         -T <msecs>  (terminate after <msecs> without any reception)
 
-I created two vcan0 interfaces on both ends, and using user space app
-Cannelloni: https://github.com/mguentner/cannelloni as binding
-application, I use CAN tunneling via ETH phys.
+Up to 16 CAN interfaces with optional filter sets can be specified
+on the commandline in the form: <ifname>[,filter]*
 
-I, actually use socketCAN-Fd framework from the Linux 4.17.2 LTS
-kernel, playing with user space can-utils app.
+Comma separated filters can be specified for each given CAN interface:
+ <can_id>:<can_mask> (matches when <received_can_id> & mask == can_id & mask)
+ <can_id>~<can_mask> (matches when <received_can_id> & mask != can_id & mask)
+ #<error_mask>       (set error frame filter, see include/linux/can/error.h)
+ [j|J]               (join the given CAN filters - logical AND semantic)
 
-Here is the condensed Beaglebone Black local.conf for such kind of setup:
+CAN IDs, masks and data content are given and expected in hexadecimal values.
+When can_id and can_mask are both 8 digits, they are assumed to be 29 bit EFF.
+Without any given filter all data frames are received ('0:0' default filter).
 
-```
-  CONF_VERSION = "1"
-  PATCHRESOLVE = "noop"
-  SSTATE_DIR ?= "${TOPDIR}/sstate-cache"
-  DL_DIR ?= "${TOPDIR}/downloads"
-  TMPDIR ?= "${TOPDIR}/tmp"
-  PACKAGE_CLASSES ?= "package_rpm package_deb"
-  BBMASK = "meta-bbb/recipes-mender"
-  EXTRA_IMAGE_FEATURES = "debug-tweaks"
-  CORE_IMAGE_EXTRA_INSTALL_append = "openssh cmake canutils libsocketcan
-  nfs-utils rt-tests strace procps packagegroup-core-buildessential "
-  DISTRO_FEATURES_append = " ram"
-  IMAGE_FSTYPES_append = " cpio.xz"
-  MACHINE ??= "beaglebone"
-  DISTRO ??= "poky"
-  BBMULTICONFIG ?= ""
-```
-And, the setup (on both sides) is shown here:
-https://stackoverflow.com/questions/36568167/can-fd-support-for-virtual-can-vcan-on-socketcan/51376306#51376306
-(signed as _nobody_, aka me).
+Use interface name 'any' to receive from all CAN interfaces.
 
-It works as a charm. Please, do note that commands are generic.
+Examples:
+candump -c -c -ta can0,123:7FF,400:700,#000000FF can2,400~7F0 can3 can8
+candump -l any,0~0,#FFFFFFFF    (log only error frames but no(!) data frames)
+candump -l any,0:0,#FFFFFFFF    (log error frames and also all data frames)
+candump vcan2,92345678:DFFFFFFF (match only for extended CAN ID 12345678)
+candump vcan2,123:7FF (matches CAN ID 123 - including EFF and RTR frames)
+candump vcan2,123:C00007FF (matches CAN ID 123 - only SFF and non-RTR frames)
+```
+#### cangen -help  
+```
+cangen: generate CAN frames
 
-Beaglebone kernel 4.17.2 CAN framework .config setup for CAN-Fd setup to work is given here:
-```
-  CONFIG_CAN=m
-  CONFIG_CAN_RAW=m
-  CONFIG_CAN_BCM=m
-  CONFIG_CAN_GW=m
-  # CAN Device Drivers
-  CONFIG_CAN_VCAN=m
-  CONFIG_CAN_VXCAN=m
-  CONFIG_CAN_SLCAN=m
-  CONFIG_CAN_DEV=m
-  CONFIG_CAN_CALC_BITTIMING=y
-  # CONFIG_CAN_LEDS is not set
-  # CONFIG_CAN_FLEXCAN is not set
-  # CONFIG_CAN_GRCAN is not set
-  CONFIG_CAN_TI_HECC=m
-  CONFIG_CAN_C_CAN=m
-  CONFIG_CAN_C_CAN_PLATFORM=m
-  # CONFIG_CAN_CC770 is not set
-  # CONFIG_CAN_IFI_CANFD is not set
-  # CONFIG_CAN_M_CAN is not set
-  # CONFIG_CAN_RCAR is not set
-  # CONFIG_CAN_RCAR_CANFD is not set
-  # CONFIG_CAN_SJA1000 is not set
-  CONFIG_CAN_SOFTING=m
-  # CAN SPI interfaces
-  # CONFIG_CAN_HI311X is not set
-  CONFIG_CAN_MCP251X=m
-  # CAN USB interfaces
-  CONFIG_CAN_EMS_USB=m
-  CONFIG_CAN_ESD_USB2=m
-  CONFIG_CAN_GS_USB=m
-  CONFIG_CAN_KVASER_USB=m
-  CONFIG_CAN_PEAK_USB=m
-  CONFIG_CAN_8DEV_USB=m
-  # CONFIG_CAN_MCBA_USB is not set
-  CONFIG_CAN_DEBUG_DEVICES=y
-  # CONFIG_SCSI_SCAN_ASYNC is not set
-```
-The complete defconfig (the config of the Beaglebone 4.17.2 kernel) file is given here:
-https://github.com/ZoranStojsavljevic/cip-rt-misc/blob/master/configs/bbb/YOCTO/SocketCAN/kernel-config/defconfig
+Usage: cangen [options] <CAN interface>
+Options: -g <ms>       (gap in milli seconds - default: 200 ms)
+         -e            (generate extended frame mode (EFF) CAN frames)
+         -f            (generate CAN FD CAN frames)
+         -b            (generate CAN FD CAN frames with bitrate switch (BRS))
+         -R            (send RTR frame)
+         -m            (mix -e -f -b -R frames)
+         -I <mode>     (CAN ID generation mode - see below)
+         -L <mode>     (CAN data length code (dlc) generation mode - see below)
+         -D <mode>     (CAN data (payload) generation mode - see below)
+         -p <timeout>  (poll on -ENOBUFS to write frames with <timeout> ms)
+         -n <count>    (terminate after <count> CAN frames - default infinite)
+         -i            (ignore -ENOBUFS return values on write() syscalls)
+         -x            (disable local loopback of generated CAN frames)
+         -v            (increment verbose level for printing sent CAN frames)
 
-To set socketCAN-Fd framework beneath Linux kernel (example given: 4.17.2), please, do as root:
-```
-  lsmod | grep can
-  modprobe can
-  modprobe can_raw
-  modprobe can-bcm
-  modprobe can-dev
-  modprobe can-gw
-  modprobe vcan
-  lsmod | grep can
-```
-To set the socketCAN-Fd framework, the following should be done (also as root):
-```
-  ip link add dev vcan0 type vcan
-  ip link set vcan0 mtu 72
-  ip link set dev vcan0 up
-  ifconfig
-```
-The can-utils package is required to test the socketCAN-Fd framework.
-Also, the following is required:
-https://github.com/mguentner/cannelloni
+Generation modes:
+'r'        => random values (default)
+'i'        => increment values
+<hexvalue> => fix value using <hexvalue>
 
-And, everything works like a Swatch!
+When incrementing the CAN data the data length code minimum is set to 1.
+CAN IDs and data content are given and expected in hexadecimal values.
 
-On the xmit side: cangen -f vcan0 -v vcan0
+Examples:
+cangen vcan0 -g 4 -I 42A -L 1 -D i -v -v   (fixed CAN ID and length, inc. data)
+cangen vcan0 -e -L i -v -v -v              (generate EFF frames, incr. length)
+cangen vcan0 -D 11223344DEADBEEF -L 8      (fixed CAN data payload and length)
+cangen vcan0 -g 0 -i -x                    (full load test ignoring -ENOBUFS)
+cangen vcan0 -g 0 -p 10 -x                 (full load test with polling, 10ms timeout)
+cangen vcan0                               (my favourite default :)
 ```
-2C3##0.25.5A.FF.1E.DC.BD.CB.42.25.5A.FF.1E.DC.BD.CB.42.25.5A.FF.1E.DC.
-BD.CB.42.25.5A.FF.1E.DC.BD.CB.42.25.5A.FF.1E.DC.BD.CB.42.25.5A.FF.1E.
-DC.BD.CB.42.25.5A.FF.1E.DC.BD.CB.42.25.5A.FF.1E.DC.BD.CB.42
-```
-On the receiving side: candump vcan0
-```
-vcan0 2C3 [64] 25 5A FF 1E DC BD CB 42 25 5A FF 1E DC BD CB 42 25 5A
-FF 1E DC BD CB 42 25 5A FF 1E DC BD CB 42 25 5A FF 1E DC BD CB 42 25
-5A FF 1E DC BD CB 42 25 5A FF 1E DC BD CB 42 25 5A FF 1E DC BD CB 42
-```
-True socketCAN-Fd framework.
