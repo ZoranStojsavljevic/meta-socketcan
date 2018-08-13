@@ -15,7 +15,6 @@ I, actually use socketCAN-Fd framework from the Linux 4.17.2 LTS
 kernel, playing with user space can-utils app.
 
 Here is the condensed Beaglebone Black local.conf for such kind of setup:
-
 ```
   CONF_VERSION = "1"
   PATCHRESOLVE = "noop"
@@ -23,11 +22,12 @@ Here is the condensed Beaglebone Black local.conf for such kind of setup:
   DL_DIR ?= "${TOPDIR}/downloads"
   TMPDIR ?= "${TOPDIR}/tmp"
   PACKAGE_CLASSES ?= "package_rpm package_deb"
+  # mask for non-mender builds
   BBMASK = "meta-bbb/recipes-mender"
+  BBMASK += "meta-openembedded/meta-oe/recipes-extended/socketcan/canutils"
   EXTRA_IMAGE_FEATURES = "debug-tweaks"
-  CORE_IMAGE_EXTRA_INSTALL_append = "openssh cmake canutils libsocketcan
-  nfs-utils rt-tests strace procps packagegroup-core-buildessential "
-  DISTRO_FEATURES_append = " ram"
+  CORE_IMAGE_EXTRA_INSTALL_append = "openssh cmake libsocketcan nfs-utils rt-tests strace procps packagegroup-core-buildessential "
+  DISTRO_FEATURES_append = " nfs"
   IMAGE_FSTYPES_append = " cpio.xz"
   MACHINE ??= "beaglebone"
   DISTRO ??= "poky"
