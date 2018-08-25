@@ -118,4 +118,87 @@ root@beaglebone:~# nc 127.0.0.1 28601
 < ok >
 root@beaglebone:~#
 ```
+=======
 
+### Another use case with cannelloni, which does not work (different data formats)!
+
+I discovered that socketcand on the embedded side does NOT recognize cannelloni on my VM, which has pass-through mechanisms between VM on PC and embedded HW (Beaglebone Black).
+
+What I do, I set in my VM my private network, which sees all the components (energenie switch, bbb board and VM eth2 interface with built-in DHCP and TFTPD-hpa which work perfectly).
+
+On the VM, I have the following set:
+
+lsmod | grep can
+vcan 16384 0
+can_gw 20480 0
+can_dev 24576 0
+can_bcm 24576 0
+can_raw 20480 2
+can 49152 3 can_raw,can_bcm,can_gw
+ifconfig vcan0
+vcan0: flags=193<UP,RUNNING,NOARP> mtu 72
+unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00 txqueuelen 1 (UNSPEC)
+RX packets 54555 bytes 861125 (840.9 KiB)
+RX errors 0 dropped 0 overruns 0 frame 0
+TX packets 54555 bytes 861125 (840.9 KiB)
+TX errors 0 dropped 0 overruns 0 carrier 0 collisions 0
+
+True CAN-Fd vcan0 interface.
+
+The VM private IP eth2 looks like:
+eth2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 1500
+inet 192.168.15.2 netmask 255.255.255.0 broadcast 192.168.15.255
+inet6 fe80::210:60ff:fe31:5757 prefixlen 64 scopeid 0x20
+ether 00:10:60:31:57:57 txqueuelen 1000 (Ethernet)
+RX packets 51066 bytes 3185024 (3.0 MiB)
+RX errors 0 dropped 0 overruns 0 frame 0
+TX packets 103432 bytes 65516832 (62.4 MiB)
+TX errors 0 dropped 0 overruns 0 carrier 0 collisions 0
+
+NMAP command gives me the following:
+nmap -T5 -sP 192.168.15.0/24
+
+Starting Nmap 7.40 ( https://nmap.org ) at 2018-08-14 12:59 GMT
+Nmap scan report for 192.168.15.21
+Host is up (0.0037s latency).
+MAC Address: 88:B6:27:01:66:EA (Gembird Europe BV)
+Nmap scan report for 192.168.15.53
+Host is up (0.010s latency).
+MAC Address: 88:F0:77:5A:14:1C (Cisco Systems)
+Nmap scan report for 192.168.15.101
+Host is up (0.0023s latency).
+MAC Address: F0:45:DA:83:09:B4 (Unknown)
+Nmap scan report for 192.168.15.2
+Host is up.
+Nmap done: 256 IP addresses (4 hosts up) scanned in 1.70 seconds
+
+So, my BBB IP is 192.168.15.101 !
+
+The VM Cannelonni is configured as:
+cannelloni -I vcan0 -R 192.168.15.101 -r 28601 -l 28601&
+
+On the BBB side, I have very similar VCAN interfaces, and similar VCAN0 CAN-Fd capable interface.
+
+But I am not able to connect with the command:
+socketcand -v -i vcan0 -p 28601 -l eth0&
+
+My best guess is that beacon is working, but I do NOT see any receiving CAN-Fd packets which Cannelloni sends to 192.168.15.101 , port 28601.
+
+And here is the CLI transcript what I did on the BBB side:
+
+root@beaglebone:~ ps -aux | grep socketcand
+root 1607 0.0 0.2 10196 1324 pts/0 Sl 12:07 0:00 socketcand -v -i vcan0 -p 28601 -l eth0
+root 1656 0.0 0.2 2776 1208 pts/0 S+ 13:05 0:00 grep socketcand
+root@beaglebone:~ nc 192.168.15.101 28601
+client connected
+< hi > < open vcan0 >
+connecting BCM socket...
+< ok > < rawmode >
+state changed to 2
+< ok >
+
+I do NOT see any received packets. neither any beacon discovery.
+
+There are two imminent questions about this problem:
+[1] Does socketcand recognize cannelloni CAN packets? If not, why, and how to rework socketcand, so it could be achievable?
+[2] Does any another socketcancl (socketcan client) exist which is compatible with socketcand?
