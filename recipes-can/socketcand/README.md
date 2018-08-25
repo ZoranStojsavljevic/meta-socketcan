@@ -202,5 +202,7 @@ state changed to 2
 I do NOT see any received packets. neither any beacon discovery.
 
 There are two imminent questions about this problem:
+```
 [1] Does socketcand recognize cannelloni CAN packets? If not, why, and how to rework socketcand, so it could be achievable?
 [2] Does any another socketcancl (socketcan client) exist which is compatible with socketcand?
+```
