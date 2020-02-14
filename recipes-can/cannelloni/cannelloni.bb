@@ -1,32 +1,38 @@
 SUMMARY = "SocketCAN over Ethernet tunnel using UDP to transfer CAN frames between two machines"
-SECTION = "socketcan"
+SECTION = "console/network"
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
+LIC_FILES_CHKSUM = "file://gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
+
 PR = "r0"
 
-## DEPENDS = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"
-RDEPENDS_${PN}-dev += "${PN}-staticdev"
+DEPENDS = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"
 
-## SRCREV = "${AUTOREV}"
-## SRCREV = "2558902f0b2c2750ce99d05ac3cfe149c391482b"
-SRCREV = "e3ac7393b566345d057c2d17a4d328007caaacac"
+SRCREV = "${AUTOREV}"
 
-SRC_URI = "git://github.com/mguentner/cannelloni.git;protocol=https"
+SRC_URI = "git://github.com/mguentner/cannelloni \
+           file://launch_cannelloni.sh \
+           file://launch_cannelloni.service"
 
 S = "${WORKDIR}/git"
 
 inherit pkgconfig cmake
 inherit systemd
 
+SYSTEMD_SERVICE_${PN} = "launch_cannelloni.service"
+INITSCRIPT_NAME = "launch_cannelloni.sh"
+
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 
-INSANE_SKIP_${PN} = "ldflags"
-INHIBIT_PACKAGE_STRIP = "1"
-INHIBIT_SYSROOT_STRIP = "1"
-SOLIBS = ".so"
-FILES_SOLIBSDEV = ""
+do_install() {
+    install -d ${D}${bindir}
+    install -m 0755 cannelloni ${D}${bindir}
 
-do_install_append () {
-	install -d ${D}${libdir}
-	install -m 0755 ${WORKDIR}/build/libcannelloni-common.so ${D}${libdir}
+    install -m 0755 ${WORKDIR}/launch_cannelloni.sh ${D}${bindir}
+
+    install -d ${D}${systemd_unitdir}/system
+    install -m 0644 ${WORKDIR}/launch_cannelloni.service ${D}${systemd_unitdir}/system
 }
+
+RPROVIDES_${PN} += "${PN}-systemd"
+RREPLACES_${PN} += "${PN}-systemd"
+RCONFLICTS_${PN} += "${PN}-systemd"
