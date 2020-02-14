@@ -1,5 +1,5 @@
 SUMMARY = "SocketCAN over Ethernet tunnel using UDP to transfer CAN frames between two machines"
-SECTION = "console/network"
+SECTION = "socketcan"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
@@ -7,8 +7,8 @@ PR = "r0"
 
 DEPENDS = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"
 
-SRCREV = "${AUTOREV}"
-
+## SRCREV = "${AUTOREV}"
+SRCREV = "0fb6880b719b8acf2b4210b264b7140135e4be8a"
 SRC_URI = "git://github.com/mguentner/cannelloni \
            file://launch_cannelloni.sh \
            file://launch_cannelloni.service"
