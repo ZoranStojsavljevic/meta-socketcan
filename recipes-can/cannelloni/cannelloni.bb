@@ -4,18 +4,8 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 PR = "r0"
 
-<<<<<<< HEAD
-DEPENDS = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)}"
-
-## SRCREV = "${AUTOREV}"
-SRCREV = "0fb6880b719b8acf2b4210b264b7140135e4be8a"
-SRC_URI = "git://github.com/mguentner/cannelloni \
-           file://launch_cannelloni.sh \
-           file://launch_cannelloni.service"
-=======
 SRCREV = "${AUTOREV}"
 SRC_URI = "git://github.com/mguentner/cannelloni.git;protocol=https"
->>>>>>> Finalizing meta-socketcan recipes SRCREV => $AUTOREV
 
 S = "${WORKDIR}/git"
 
