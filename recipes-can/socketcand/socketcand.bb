@@ -8,7 +8,6 @@ DEPENDS = "libconfig"
 RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 SRCREV = "${AUTOREV}"
-
 ## SRC_URI = "git://github.com/dschanoeh/socketcand.git;protocol=https"
 SRC_URI = "git://github.com/linux-can/socketcand.git;protocol=https"
 

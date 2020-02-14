@@ -8,7 +8,6 @@ DEPENDS = "libsocketcan"
 RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 SRCREV = "${AUTOREV}"
-
 SRC_URI = "git://github.com/linux-can/can-utils.git;protocol=https"
 
 SRC_URI[md5sum] = "f8500620c1fe8fd3ce01a5bfd6a03adb"
