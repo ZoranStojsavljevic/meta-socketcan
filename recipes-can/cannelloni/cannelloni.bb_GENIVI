@@ -22,24 +22,15 @@ INITSCRIPT_NAME = "launch_cannelloni.sh"
 
 EXTRA_OECMAKE += "-DCMAKE_BUILD_TYPE=Release"
 
-INSANE_SKIP_${PN} = "ldflags"
-INHIBIT_PACKAGE_STRIP = "1"
-INHIBIT_SYSROOT_STRIP = "1"
-INHIBIT_PACKAGE_DEBUG_SPLIT  = "1"
+## cannelloni-dev-1.0 is registered as shlib provider for libcannelloni-common.so.0
 SOLIBS = ".so"
 FILES_SOLIBSDEV = ""
 
 do_install() {
-	install -d ${D}${bindir}
-	install -m 0755 cannelloni ${D}${bindir}
-
-	## ERROR: QA Issue: package cannelloni contains bad RPATH
-	## quick fix is in a do_install or do_install_append do
-	chrpath -d ${D}${bindir}/cannelloni
-
 	install -d ${D}${libdir}
-	install -m 0755 ${WORKDIR}/build/libcannelloni-common.so ${D}${libdir}
+	install -m 0755 libcannelloni-common.so ${D}${libdir}
 
+	install -d ${D}${bindir}
 	install -m 0755 ${WORKDIR}/launch_cannelloni.sh ${D}${bindir}
 
 	install -d ${D}${systemd_unitdir}/system
