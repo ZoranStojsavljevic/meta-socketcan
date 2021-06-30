@@ -4,14 +4,10 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 PR = "r0"
 
-## Please, use cannelloni version 1.0.0
+SRCREV = "${AUTOREV}"
+## As a backup: cannelloni version 1.0.0
 ## https://github.com/mguentner/cannelloni/commit/0bd7e27db35bdef361226882ae04205504f7b2f4
-
-## The very next one produces g++ compiler errors
-## https://github.com/mguentner/cannelloni/commit/d01dd1dc745914d129b1f4da2074e282253246af
-
-## SRCREV = "${AUTOREV}"
-SRCREV = "0bd7e27db35bdef361226882ae04205504f7b2f4"
+## SRCREV = "0bd7e27db35bdef361226882ae04205504f7b2f4"
 SRC_URI = "git://github.com/mguentner/cannelloni.git;protocol=https"
 
 S = "${WORKDIR}/git"
