@@ -1,7 +1,7 @@
 SUMMARY = "Socketcand is a daemon that provides access to CAN interfaces via a net interface."
 SECTION = "socketcan"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+LICENSE = "GPL-2.0-only"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 PR = "r0"
 
 DEPENDS = "libconfig"
@@ -9,7 +9,7 @@ RDEPENDS_${PN}-dev += "${PN}-staticdev"
 
 SRCREV = "${AUTOREV}"
 ## SRC_URI = "git://github.com/dschanoeh/socketcand.git;protocol=https"
-SRC_URI = "git://github.com/linux-can/socketcand.git;protocol=https"
+SRC_URI = "git://github.com/linux-can/socketcand.git;branch=master;protocol=https"
 
 S = "${WORKDIR}/git"
 

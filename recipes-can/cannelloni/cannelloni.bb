@@ -1,14 +1,14 @@
 SUMMARY = "SocketCAN over Ethernet tunnel using UDP to transfer CAN frames between two machines"
 SECTION = "socketcan"
-LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+LICENSE = "GPL-2.0-only"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 PR = "r0"
 
 SRCREV = "${AUTOREV}"
 ## As a backup: cannelloni version 1.0.0
 ## https://github.com/mguentner/cannelloni/commit/0bd7e27db35bdef361226882ae04205504f7b2f4
 ## SRCREV = "0bd7e27db35bdef361226882ae04205504f7b2f4"
-SRC_URI = "git://github.com/mguentner/cannelloni.git;protocol=https"
+SRC_URI = "git://github.com/mguentner/cannelloni.git;branch=master;protocol=https"
 
 S = "${WORKDIR}/git"
 
