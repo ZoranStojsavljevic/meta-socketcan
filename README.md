@@ -16,7 +16,7 @@ kernel, playing with user space can-utils app.
 
 Here is the condensed Beaglebone Black local.conf for such kind of setup:
 ```
-  CONF_VERSION = "1"
+  CONF_VERSION = "2"
   PATCHRESOLVE = "noop"
   SSTATE_DIR ?= "${TOPDIR}/sstate-cache"
   DL_DIR ?= "${TOPDIR}/downloads"
