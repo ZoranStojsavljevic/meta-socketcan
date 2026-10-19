@@ -10,7 +10,12 @@ RDEPENDS_${PN}-dev += "${PN}-staticdev"
 SRC_URI = "git://github.com/linux-can/socketcand.git;branch=master;protocol=https"
 SRCREV = "${AUTOREV}"
 
-S = "${WORKDIR}/git"
+## socketcand-1.0-r0 do_unpack: Recipes that set S =
+## "${WORKDIR}/git" or S = "${UNPACKDIR}/git" should
+## remove that assignment, as S set by bitbake.conf
+## in oe-core now works.
+##
+## S = "${WORKDIR}/git"
 
 inherit meson pkgconfig
 

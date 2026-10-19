@@ -5,12 +5,18 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171d
 PR = "r0"
 
 SRCREV = "${AUTOREV}"
+
 ## As a backup: cannelloni version 1.0.0
 ## https://github.com/mguentner/cannelloni/commit/0bd7e27db35bdef361226882ae04205504f7b2f4
 ## SRCREV = "0bd7e27db35bdef361226882ae04205504f7b2f4"
 SRC_URI = "git://github.com/mguentner/cannelloni.git;branch=master;protocol=https"
 
-S = "${WORKDIR}/git"
+## cannelloni-1.0-r0 do_unpack: Recipes that set S =
+## "${WORKDIR}/git" or S = "${UNPACKDIR}/git" should
+## remove that assignment, as S set by bitbake.conf
+## in oe-core now works.
+##
+## S = "${WORKDIR}/git"
 
 inherit pkgconfig cmake
 
